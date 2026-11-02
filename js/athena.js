@@ -58,13 +58,11 @@
     box.className = 'setup-notice';
     box.innerHTML =
       '<div class="setup-notice__box">' +
-      '<h2>ยังตั้งค่า Supabase ไม่เรียบร้อย</h2>' +
+      '<h2>ตั้งค่า Supabase ก่อนใช้งาน</h2>' +
       '<ol>' +
-      '<li>สร้าง Project ใหม่ที่ <b>supabase.com</b></li>' +
-      '<li>รันไฟล์ <code>sql/schema.sql</code> ใน SQL Editor</li>' +
-      '<li>นำ <code>URL</code> และ <code>anon key</code> มาวางที่ <code>js/config.js</code></li>' +
+      '<li>รัน <code>sql/schema.sql</code></li>' +
+      '<li>ตั้งค่า <code>js/config.js</code></li>' +
       '</ol>' +
-      '<a href="https://supabase.com" target="_blank" rel="noopener">ไปที่ Supabase →</a>' +
       '</div>';
     document.body.appendChild(box);
     return false;
@@ -171,18 +169,54 @@
     return error.message || fallback || 'เกิดข้อผิดพลาด';
   }
 
-  /** สร้างหัวข้อรายการแบบ animation เล็ก ๆ (ใช้ตอน leaderboard อัปเดต) */
+  /**
+   * นับคะแนนจาก -> ถึง (Animation)
+   * กันบั๊คค่าค้างที่ 0: ถ้าแท็บไม่ได้แสดงผลหรือหน้าต่างไม่ถูกวาด
+   * requestAnimationFrame จะไม่ทำงานเลย จึงต้องมี fallback แสดงค่าจริง
+   */
   function countUp(element, from, to, durationMs) {
-    var start = null;
+    var target = Number(to || 0).toLocaleString('th-TH');
+    var finished = false;
+    var frames = 0;
     var dur = durationMs || 700;
+
+    function finish() {
+      if (!finished) {
+        finished = true;
+        element.textContent = target;
+      }
+    }
+
+    if (document.hidden || element.offsetParent === null) {
+      finish();
+      return;
+    }
+
+    var start = null;
+
     function step(ts) {
+      if (finished) return;
       if (start === null) start = ts;
+      frames += 1;
       var p = Math.min(1, (ts - start) / dur);
       var eased = 1 - Math.pow(1 - p, 3);
       element.textContent = Math.round(from + (to - from) * eased).toLocaleString('th-TH');
-      if (p < 1) requestAnimationFrame(step);
+      if (p >= 1) {
+        finished = true;
+        return;
+      }
+      requestAnimationFrame(step);
     }
+
     requestAnimationFrame(step);
+
+    // ถ้า rAF ไม่ถูกเรียกเลยภายใน 300 มิลลิวินาที -> แสดงค่าจริงทันที
+    setTimeout(function () {
+      if (!finished && frames === 0) finish();
+    }, 300);
+
+    // สำรองรอบสุดท้าย: ต้องแสดงค่าจริงภายใน duration + 500 มิลลิวินาทีเสมอ
+    setTimeout(finish, dur + 500);
   }
 
   window.Athena = {

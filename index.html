@@ -3,44 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ATHENA — Serverless Realtime Quiz</title>
-  <meta name="description" content="ATHENA ระบบตอบคำถามสดแบบ Serverless ด้วย HTML + JavaScript + Supabase">
+  <title>ATHENA</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div class="landing">
-    <header class="landing__hero">
-      <h1 class="landing__logo">ATHENA</h1>
-      <p class="landing__sub">
-        ระบบตอบคำถามสดแบบ <b>Serverless &amp; Realtime</b><br>
-        ทำงานบน GitHub Pages + Supabase (PostgreSQL / Realtime Pub-Sub)
-      </p>
-    </header>
+    <h1 class="landing__logo">ATHENA</h1>
 
     <div class="landing__grid">
       <a class="card" href="admin.html">
-        <div class="card__icon">📝</div>
-        <h2>Admin</h2>
-        <p>สร้าง/แก้ไข/ลบชุดข้อสอบและโจทย์คำถาม กำหนดเวลาตอบ คะแนน และปุ่ม “เริ่มเล่น” เพื่อเปิดห้องทันที</p>
+        <span class="card__icon">📝</span>
+        <span>Admin</span>
       </a>
-
       <a class="card" href="host.html">
-        <div class="card__icon">🖥️</div>
-        <h2>Host / หน้าจอผู้จัดงาน</h2>
-        <p>สร้างห้อง + รหัส PIN 6 หลัก + QR Code, รายชื่อผู้เล่น Realtime, โจทย์พร้อม Countdown, กราฟสรุป และ Leaderboard</p>
+        <span class="card__icon">🖥️</span>
+        <span>Host</span>
       </a>
-
       <a class="card" href="player.html">
-        <div class="card__icon">📱</div>
-        <h2>Player</h2>
-        <p>เข้าร่วมด้วย Game PIN แล้วตอบด้วยปุ่มสี 4 ปุ่มขนาดใหญ่ พร้อมการสั่นตอบรับและสรุปคะแนนทันที</p>
+        <span class="card__icon">📱</span>
+        <span>Player</span>
       </a>
     </div>
-
-    <footer class="landing__footer">
-      เริ่มต้นใช้งาน → รัน <code>sql/schema.sql</code> บน Supabase แล้วตั้งค่า <code>js/config.js</code>
-      (ดูรายละเอียดใน <code>README.md</code>)
-    </footer>
   </div>
 </body>
 </html>

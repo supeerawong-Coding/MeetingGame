@@ -1,133 +1,135 @@
-/* ============================ ATHENA — Admin Styles ======================= */
+/* ============================== ATHENA — Admin =========================== */
 
-.admin-grid {
-  display: grid;
-  grid-template-columns: minmax(320px, 5fr) minmax(360px, 7fr);
-  gap: 22px;
-  align-items: start;
-}
-
-@media (max-width: 940px) {
-  .admin-grid { grid-template-columns: 1fr; }
-}
-
-.hint { font-size: .82rem; margin: 0; }
-
-/* --------------------------------------------------------- Quiz list ----- */
-.quiz-list,
-.question-list {
-  list-style: none;
-  margin: 14px 0 0;
-  padding: 0;
-  display: grid;
-  gap: 10px;
-}
-
-.quiz-item,
-.question-item {
-  background: var(--panel-2);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 12px 14px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-  transition: border-color .15s ease, background .15s ease;
-}
-
-.quiz-item.is-selected {
-  border-color: var(--primary);
-  background: #34206e;
-}
-
-.quiz-item__main,
-.question-item__main {
-  flex: 1 1 190px;
-  min-width: 0;
-}
-
-.quiz-item__title,
-.question-item__text {
-  font-weight: 700;
-  word-break: break-word;
-}
-
-.quiz-item__meta,
-.question-item__meta {
-  color: var(--muted);
-  font-size: .84rem;
-}
-
-.quiz-item__actions,
-.question-item__actions {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-/* ------------------------------------------------------ Question list ---- */
-.question-item__index {
-  background: var(--primary);
-  border-radius: 10px;
-  min-width: 38px;
-  height: 38px;
+/* ------------------------------------------------------------ Login ----- */
+.login-screen {
+  height: 100%;
   display: grid;
   place-items: center;
-  font-weight: 800;
-  font-size: .9rem;
 }
 
-.question-item.is-correct .question-item__text { color: var(--ok); }
+.login-card {
+  width: min(360px, 100%);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px;
+  display: grid;
+  gap: 14px;
+  text-align: center;
+}
 
-/* ------------------------------------------------------ Question form ---- */
-.options-fieldset,
-.correct-fieldset {
-  border: 1px dashed var(--line);
-  border-radius: 14px;
-  padding: 12px 14px 16px;
+.login-card .field { text-align: left; }
+
+.login-mark {
+  width: 46px;
+  height: 46px;
+  margin: 0 auto;
+  border-radius: 13px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.3rem;
+  display: grid;
+  place-items: center;
+}
+
+/* ------------------------------------------------------- Single screen -- */
+#admin-app {
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(280px, 5fr) minmax(320px, 7fr);
+  gap: 14px;
+}
+
+@media (max-width: 860px) {
+  #admin-app { grid-template-columns: 1fr; }
+}
+
+.panel-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  align-content: start;
+}
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  font-size: .9rem;
+  padding: 18px 0;
   margin: 0;
 }
 
-.options-fieldset legend,
-.correct-fieldset legend {
-  font-size: .85rem;
-  color: var(--muted);
-  font-weight: 700;
-  padding: 0 6px;
+/* ----------------------------------------------------------- List items - */
+.item {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 10px 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  transition: border-color .12s ease;
 }
 
-.option-row {
+.item.is-selected { border-color: var(--primary); }
+
+.item__main { flex: 1 1 150px; min-width: 0; }
+.item__title { font-weight: 600; font-size: .95rem; word-break: break-word; }
+.item__meta { color: var(--muted); font-size: .78rem; }
+.item__actions { display: flex; gap: 5px; flex-wrap: wrap; }
+
+.item__index {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------- Question form -- */
+.option-grid { display: grid; gap: 8px; }
+
+.option-cell {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 10px;
 }
 
-.option-row .shape { width: 26px; display: grid; place-items: center; }
+.option-cell .shape { width: 24px; display: grid; place-items: center; }
+.option-cell--0 .shape { border-bottom-color: var(--red); }
+.option-cell--1 .shape { background: var(--blue); }
+.option-cell--2 .shape { background: var(--yellow); }
+.option-cell--3 .shape { background: var(--green); }
 
-.option-row[data-option="0"] .shape { border-bottom-color: var(--red); }
-.option-row[data-option="1"] .shape { background: var(--blue); }
-.option-row[data-option="2"] .shape { background: var(--yellow); }
-.option-row[data-option="3"] .shape { background: var(--green); }
+.correct-options { display: flex; gap: 8px; flex-wrap: wrap; }
 
-.correct-options {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.correct-options label {
-  background: #150c33;
+.correct-chip {
+  background: #0d0d11;
   border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: .5em 1em;
+  border-radius: 9px;
+  padding: .45em .95em;
   cursor: pointer;
   font-weight: 700;
+  font-size: .9rem;
 }
 
-.correct-options input { accent-color: var(--primary); }
-.correct-options label:has(input:checked) {
-  background: var(--primary);
-  border-color: var(--primary-2);
-}
+.correct-chip input { accent-color: var(--primary); margin-right: .35em; }
+.correct-chip:has(input:checked) { background: var(--primary); border-color: var(--primary); color: #fff; }

@@ -163,7 +163,6 @@
     $('#quiz-picker').hidden = true;
     $('#create-room-box').hidden = false;
     $('#picked-quiz-title').textContent = state.quiz.title;
-    $('#picked-quiz-desc').textContent = state.quiz.description || 'ไม่มีคำอธิบาย';
   }
 
   /* ================================================= Room / Lobby ========= */
@@ -239,7 +238,7 @@
 
     // ปุ่มเริ่มเกมต้องมีผู้เล่นอย่างน้อย 1 คน
     $('#btn-start').disabled = true;
-    $('#lobby-waiting').textContent = 'รอผู้เล่นเข้าร่วม…';
+    $('#lobby-waiting').textContent = 'รอผู้เล่น…';
   }
 
   async function refreshPlayers() {

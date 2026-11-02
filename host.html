@@ -18,29 +18,23 @@
     </div>
   </header>
 
-  <main>
+  <main class="main-center">
 
     <!-- =============================== SETUP ============================== -->
     <section class="screen" id="screen-setup">
       <div class="panel narrow">
-        <h1>🖥️ เริ่มเกม</h1>
-        <p class="muted">เลือกชุดข้อสอบเพื่อสร้างห้องแข่งขัน</p>
+        <h1>เริ่มเกม</h1>
 
         <div id="create-room-box" hidden>
-          <div class="picked-quiz">
-            <h2 id="picked-quiz-title"></h2>
-            <p class="muted" id="picked-quiz-desc"></p>
-          </div>
+          <div class="picked-quiz" id="picked-quiz-title"></div>
           <div class="controls">
-            <button class="btn btn-primary btn-lg" id="btn-create-room">สร้างห้องแข่งขัน</button>
-            <button class="btn" id="btn-change-quiz">เลือกชุดอื่น</button>
+            <button class="btn btn-primary btn-lg" id="btn-create-room">สร้างห้อง</button>
+            <button class="btn" id="btn-change-quiz">เลือกอื่น</button>
           </div>
         </div>
 
         <div id="quiz-picker" class="quiz-picker"></div>
-        <p id="quiz-picker-empty" class="muted center" hidden>
-          ยังไม่มีชุดข้อสอบ — ไปที่ <a href="admin.html">หน้า Admin</a> เพื่อสร้างก่อน
-        </p>
+        <p id="quiz-picker-empty" class="muted center small" hidden>ยังไม่มีชุดข้อสอบ</p>
       </div>
     </section>
 
@@ -48,11 +42,9 @@
     <section class="screen" id="screen-lobby" hidden>
       <div class="lobby-grid">
         <div class="panel lobby-code">
-          <p class="muted">เข้าร่วมที่</p>
-          <div class="join-url" id="join-url">player.html</div>
           <div class="pin-display" id="lobby-pin">------</div>
-          <p class="muted center">สแกน QR Code หรือพิมพ์รหัส 6 หลัก</p>
           <div class="qr-box" id="qr-box"></div>
+          <div class="join-url" id="join-url"></div>
         </div>
 
         <div class="panel">
@@ -92,7 +84,7 @@
       <div class="result-grid">
         <div class="panel">
           <div class="panel-head">
-            <h2>📊 สรุปคำตอบ</h2>
+            <h2>สรุปคำตอบ</h2>
             <span class="q-chip" id="r-counter"></span>
           </div>
           <div class="chart" id="chart"></div>
@@ -101,7 +93,7 @@
 
         <div class="panel">
           <div class="panel-head">
-            <h2>🏆 อันดับคะแนน Top 5</h2>
+            <h2>อันดับคะแนน</h2>
           </div>
           <ol class="leaderboard" id="leaderboard"></ol>
         </div>
@@ -123,7 +115,7 @@
       <div class="podium" id="podium"></div>
 
       <div class="panel">
-        <div class="panel-head"><h2>🏆 คะแนนสูงสุด</h2></div>
+        <div class="panel-head"><h2>อันดับคะแนน</h2></div>
         <ol class="leaderboard" id="final-board"></ol>
       </div>
 

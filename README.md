@@ -6,7 +6,7 @@ Frontend เป็นตัวดำเนิน Logic ร่วมกับ **S
 
 | | |
 | --- | --- |
-| 📝 **Admin** | สร้าง/แก้ไข/ลบ ชุดข้อสอบ และโจทย์คำถาม (ตัวเลือก A-D, เฉลย, คะแนน, เวลา) |
+| 📝 **Admin** | **Login ด้วย Username/Password** แล้วจัดการชุดข้อสอบและโจทย์คำถาม (ตัวเลือก A-D, เฉลย, คะแนน, เวลา) |
 | 🖥️ **Host** | สร้างห้อง + PIN 6 หลัก + QR Code, Lobby รายชื่อ Realtime, Countdown, กราฟสรุป, Leaderboard Top 5 |
 | 📱 **Player** | เข้าร่วมด้วย Game PIN, ปุ่มตอบสี 4 ปุ่มขนาดใหญ่ + Vibration, สรุป “ถูก/ผิด” ทันที |
 
@@ -61,9 +61,15 @@ window.ATHENA_CONFIG = {
   SUPABASE_ANON_KEY: 'eyJhbGciOi...',
   APP_BASE_URL: '',              // เช่น https://your-name.github.io/meeting_game
   DEFAULT_TIME_LIMIT: 20,
-  DEFAULT_POINTS: 1000
+  DEFAULT_POINTS: 1000,
+  ADMIN_USERNAME: 'admin',       // ★ เปลี่ยนก่อนใช้งานจริง
+  ADMIN_PASSWORD: 'athena123'    // ★ เปลี่ยนก่อนใช้งานจริง
 };
 ```
+
+> 🔐 **หน้า Admin ต้อง Login ก่อนจัดการข้อสอบ** — ใส่ Username/Password ตามค่าใน `config.js`
+> เป็นการป้องกันระดับหน้าจอเท่านั้น (โค้ดฝั่ง client เปิดอ่านได้) ถ้าต้องการความปลอดภัยจริงจัง
+> ให้เพิ่ม Supabase Auth + จำกัดสิทธิ์ RLS
 
 > ⚠️ ใช้ได้เฉพาะ **anon key** เท่านั้น — **ห้าม**วาง Service Role Key ลงในโค้ดฝั่ง Front-end เด็ดขาด
 > (GitHub Pages เปิดให้ทุกคนอ่านซอร์สโค้ดได้)
