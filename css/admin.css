@@ -1,0 +1,133 @@
+/* ============================ ATHENA — Admin Styles ======================= */
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 5fr) minmax(360px, 7fr);
+  gap: 22px;
+  align-items: start;
+}
+
+@media (max-width: 940px) {
+  .admin-grid { grid-template-columns: 1fr; }
+}
+
+.hint { font-size: .82rem; margin: 0; }
+
+/* --------------------------------------------------------- Quiz list ----- */
+.quiz-list,
+.question-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.quiz-item,
+.question-item {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.quiz-item.is-selected {
+  border-color: var(--primary);
+  background: #34206e;
+}
+
+.quiz-item__main,
+.question-item__main {
+  flex: 1 1 190px;
+  min-width: 0;
+}
+
+.quiz-item__title,
+.question-item__text {
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.quiz-item__meta,
+.question-item__meta {
+  color: var(--muted);
+  font-size: .84rem;
+}
+
+.quiz-item__actions,
+.question-item__actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------ Question list ---- */
+.question-item__index {
+  background: var(--primary);
+  border-radius: 10px;
+  min-width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: .9rem;
+}
+
+.question-item.is-correct .question-item__text { color: var(--ok); }
+
+/* ------------------------------------------------------ Question form ---- */
+.options-fieldset,
+.correct-fieldset {
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  padding: 12px 14px 16px;
+  margin: 0;
+}
+
+.options-fieldset legend,
+.correct-fieldset legend {
+  font-size: .85rem;
+  color: var(--muted);
+  font-weight: 700;
+  padding: 0 6px;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.option-row .shape { width: 26px; display: grid; place-items: center; }
+
+.option-row[data-option="0"] .shape { border-bottom-color: var(--red); }
+.option-row[data-option="1"] .shape { background: var(--blue); }
+.option-row[data-option="2"] .shape { background: var(--yellow); }
+.option-row[data-option="3"] .shape { background: var(--green); }
+
+.correct-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.correct-options label {
+  background: #150c33;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: .5em 1em;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.correct-options input { accent-color: var(--primary); }
+.correct-options label:has(input:checked) {
+  background: var(--primary);
+  border-color: var(--primary-2);
+}

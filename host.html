@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATHENA — Host</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/host.css">
+</head>
+<body class="host-body">
+  <header class="topbar">
+    <a class="brand" href="index.html">ATHEN<span>A</span></a>
+    <span class="badge" id="room-badge" hidden>ห้อง <b id="pin-text">------</b></span>
+    <div class="topbar-actions">
+      <span class="badge" id="quiz-badge" hidden></span>
+      <button class="btn btn-sm btn-ghost" id="btn-mute">🔊 เสียง: เปิด</button>
+      <a class="btn btn-sm btn-ghost" href="index.html">ออก</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- =============================== SETUP ============================== -->
+    <section class="screen" id="screen-setup">
+      <div class="panel narrow">
+        <h1>🖥️ เริ่มเกม</h1>
+        <p class="muted">เลือกชุดข้อสอบเพื่อสร้างห้องแข่งขัน</p>
+
+        <div id="create-room-box" hidden>
+          <div class="picked-quiz">
+            <h2 id="picked-quiz-title"></h2>
+            <p class="muted" id="picked-quiz-desc"></p>
+          </div>
+          <div class="controls">
+            <button class="btn btn-primary btn-lg" id="btn-create-room">สร้างห้องแข่งขัน</button>
+            <button class="btn" id="btn-change-quiz">เลือกชุดอื่น</button>
+          </div>
+        </div>
+
+        <div id="quiz-picker" class="quiz-picker"></div>
+        <p id="quiz-picker-empty" class="muted center" hidden>
+          ยังไม่มีชุดข้อสอบ — ไปที่ <a href="admin.html">หน้า Admin</a> เพื่อสร้างก่อน
+        </p>
+      </div>
+    </section>
+
+    <!-- =============================== LOBBY ============================= -->
+    <section class="screen" id="screen-lobby" hidden>
+      <div class="lobby-grid">
+        <div class="panel lobby-code">
+          <p class="muted">เข้าร่วมที่</p>
+          <div class="join-url" id="join-url">player.html</div>
+          <div class="pin-display" id="lobby-pin">------</div>
+          <p class="muted center">สแกน QR Code หรือพิมพ์รหัส 6 หลัก</p>
+          <div class="qr-box" id="qr-box"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>ผู้เล่นในห้อง (<span id="lobby-count">0</span>)</h2>
+          </div>
+          <ul class="player-list" id="player-list"></ul>
+          <p class="muted center" id="lobby-waiting">รอผู้เล่นเข้าร่วม…</p>
+          <div class="controls">
+            <button class="btn btn-primary btn-lg" id="btn-start" disabled>▶ เริ่มเกม</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== QUESTION =========================== -->
+    <section class="screen" id="screen-question" hidden>
+      <div class="q-meta">
+        <span class="q-chip" id="q-counter">ข้อ 1/1</span>
+        <span class="q-chip" id="q-answered">ตอบแล้ว 0/0</span>
+        <span class="q-timer" id="q-timer">20</span>
+      </div>
+      <div class="q-progress"><div id="q-progress-bar"></div></div>
+
+      <h1 class="q-text" id="q-text">คำถาม</h1>
+      <div class="q-options" id="q-options"></div>
+
+      <div class="controls">
+        <button class="btn js-finish">⏹ จบข้อนี้ / แสดงผล</button>
+        <button class="btn btn-primary js-next">ข้อถัดไป →</button>
+        <button class="btn btn-danger js-end">จบเกม</button>
+      </div>
+    </section>
+
+    <!-- =============================== RESULT ============================ -->
+    <section class="screen" id="screen-result" hidden>
+      <div class="result-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>📊 สรุปคำตอบ</h2>
+            <span class="q-chip" id="r-counter"></span>
+          </div>
+          <div class="chart" id="chart"></div>
+          <div class="reveal" id="reveal"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>🏆 อันดับคะแนน Top 5</h2>
+          </div>
+          <ol class="leaderboard" id="leaderboard"></ol>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-primary js-next">ข้อถัดไป →</button>
+        <button class="btn btn-danger js-end">จบเกม</button>
+      </div>
+    </section>
+
+    <!-- =============================== ENDED ============================= -->
+    <section class="screen" id="screen-ended" hidden>
+      <div class="center">
+        <h1>🎉 จบเกม!</h1>
+        <p class="muted" id="ended-sub"></p>
+      </div>
+
+      <div class="podium" id="podium"></div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>🏆 คะแนนสูงสุด</h2></div>
+        <ol class="leaderboard" id="final-board"></ol>
+      </div>
+
+      <div class="controls">
+        <a class="btn btn-primary" href="index.html">กลับหน้าแรก</a>
+        <button class="btn" id="btn-new-room">สร้างห้องใหม่</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/athena.js"></script>
+  <script src="js/host.js"></script>
+</body>
+</html>

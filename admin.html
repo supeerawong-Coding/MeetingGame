@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATHENA — Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">ATHEN<span>A</span></a>
+    <span class="badge">หน้าแอดมิน · จัดการคลังข้อสอบ</span>
+    <div class="topbar-actions">
+      <a class="btn btn-sm btn-ghost" href="host.html">เปิดหน้า Host →</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="admin-grid">
+
+      <!-- ============================ ชุดข้อสอบ ============================ -->
+      <section class="panel">
+        <div class="panel-head">
+          <h2>📚 ชุดข้อสอบ</h2>
+          <button id="btn-new-quiz" class="btn btn-primary btn-sm">+ ชุดใหม่</button>
+        </div>
+
+        <!-- ฟอร์มสร้าง/แก้ไขชุดข้อสอบ -->
+        <form id="quiz-form" class="form" hidden>
+          <input type="hidden" id="quiz-id">
+
+          <div class="field">
+            <label for="quiz-title">ชื่อชุดข้อสอบ *</label>
+            <input class="input" id="quiz-title" type="text" maxlength="120" placeholder="เช่น แบบทดสอบวิทยาศาสตร์ ป.6" required>
+          </div>
+
+          <div class="field">
+            <label for="quiz-description">คำอธิบาย</label>
+            <textarea class="input" id="quiz-description" maxlength="400" placeholder="คำอธิบาย/คำแนะนำ (ไม่บังคับ)"></textarea>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="quiz-time-limit">เวลาตอบต่อข้อ (วินาที)</label>
+              <select class="input" id="quiz-time-limit">
+                <option value="10">10 วินาที</option>
+                <option value="20" selected>20 วินาที</option>
+                <option value="30">30 วินาที</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="quiz-points">คะแนนเริ่มต้นต่อข้อ</label>
+              <input class="input" id="quiz-points" type="number" min="100" max="10000" step="100" value="1000">
+            </div>
+          </div>
+          <p class="muted hint">* เวลา/คะแนนเริ่มต้นนี้ใช้ตอนสร้างคำถามใหม่เท่านั้น ยังแก้รายข้อได้ทีหลัง</p>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">บันทึก</button>
+            <button type="button" id="quiz-cancel" class="btn">ยกเลิก</button>
+          </div>
+        </form>
+
+        <ul id="quiz-list" class="quiz-list"></ul>
+        <p id="quiz-empty" class="muted center" hidden>ยังไม่มีชุดข้อสอบ — กด “+ ชุดใหม่” เพื่อเริ่มต้น</p>
+      </section>
+
+      <!-- ============================ โจทย์คำถาม ========================== -->
+      <section class="panel">
+        <div class="panel-head">
+          <h2>❓ โจทย์คำถาม <span id="questions-quiz-name" class="muted"></span></h2>
+          <button id="btn-new-question" class="btn btn-primary btn-sm" disabled>+ คำถามใหม่</button>
+        </div>
+
+        <p id="no-quiz-hint" class="muted center">เลือกชุดข้อสอบทางซ้าย เพื่อจัดการโจทย์คำถาม</p>
+
+        <!-- ฟอร์มสร้าง/แก้ไขคำถาม -->
+        <form id="question-form" class="form" hidden>
+          <input type="hidden" id="question-id">
+
+          <div class="field">
+            <label for="question-text">ข้อความคำถาม *</label>
+            <textarea class="input" id="question-text" maxlength="500" placeholder="พิมพ์คำถามที่จะแสดงบนจอใหญ่" required></textarea>
+          </div>
+
+          <fieldset class="options-fieldset">
+            <legend>ตัวเลือกทั้ง 4 ข้อ *</legend>
+            <div class="option-row" data-option="0">
+              <span class="shape shape-triangle" aria-hidden="true"></span>
+              <input class="input option-text" id="option-0" type="text" maxlength="160" placeholder="ตัวเลือก A" required>
+            </div>
+            <div class="option-row" data-option="1">
+              <span class="shape shape-diamond" aria-hidden="true"></span>
+              <input class="input option-text" id="option-1" type="text" maxlength="160" placeholder="ตัวเลือก B" required>
+            </div>
+            <div class="option-row" data-option="2">
+              <span class="shape shape-circle" aria-hidden="true"></span>
+              <input class="input option-text" id="option-2" type="text" maxlength="160" placeholder="ตัวเลือก C" required>
+            </div>
+            <div class="option-row" data-option="3">
+              <span class="shape shape-square" aria-hidden="true"></span>
+              <input class="input option-text" id="option-3" type="text" maxlength="160" placeholder="ตัวเลือก D" required>
+            </div>
+          </fieldset>
+
+          <fieldset class="correct-fieldset">
+            <legend>ข้อที่ถูกต้อง *</legend>
+            <div class="correct-options">
+              <label><input type="radio" name="correct" value="0" checked> A</label>
+              <label><input type="radio" name="correct" value="1"> B</label>
+              <label><input type="radio" name="correct" value="2"> C</label>
+              <label><input type="radio" name="correct" value="3"> D</label>
+            </div>
+          </fieldset>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="question-points">คะแนนของข้อนี้</label>
+              <input class="input" id="question-points" type="number" min="100" max="10000" step="100" value="1000">
+            </div>
+            <div class="field">
+              <label for="question-time-limit">เวลาตอบ (วินาที)</label>
+              <select class="input" id="question-time-limit">
+                <option value="10">10 วินาที</option>
+                <option value="20" selected>20 วินาที</option>
+                <option value="30">30 วินาที</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="question-order">ลำดับข้อ</label>
+              <input class="input" id="question-order" type="number" min="0" step="1" value="0">
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">บันทึกคำถาม</button>
+            <button type="button" id="question-cancel" class="btn">ยกเลิก</button>
+          </div>
+        </form>
+
+        <ol id="question-list" class="question-list"></ol>
+        <p id="question-empty" class="muted center" hidden>ชุดข้อสอบนี้ยังไม่มีคำถาม</p>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/athena.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

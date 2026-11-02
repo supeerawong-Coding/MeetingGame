@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#120829">
+  <title>ATHENA — เข้าร่วมเกม</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/player.css">
+</head>
+<body class="player-body">
+  <header class="topbar">
+    <a class="brand" href="index.html">ATHEN<span>A</span></a>
+    <div class="topbar-actions">
+      <span class="badge" id="player-rank" hidden></span>
+    </div>
+  </header>
+
+  <main class="player-main">
+
+    <!-- ================================ JOIN ============================== -->
+    <section class="screen" id="screen-join">
+      <div class="join-card">
+        <h1>เข้าร่วมเกม</h1>
+        <p class="muted center">กรอกรหัส Game PIN จากจอใหญ่</p>
+
+        <form id="join-form" class="form">
+          <div class="field">
+            <label for="pin-input">Game PIN</label>
+            <input
+              class="input pin-input"
+              id="pin-input"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              maxlength="6"
+              placeholder="••••••"
+              pattern="[0-9]*"
+              required>
+          </div>
+
+          <div class="field">
+            <label for="nickname-input">ชื่อเล่น</label>
+            <input
+              class="input"
+              id="nickname-input"
+              type="text"
+              maxlength="20"
+              autocomplete="nickname"
+              placeholder="เช่น น้องฟ้าใส"
+              required>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-block" id="btn-join">เข้าร่วม →</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================== WAITING ============================= -->
+    <section class="screen center" id="screen-waiting" hidden>
+      <div class="waiting-card">
+        <div class="waiting-emoji">🎮</div>
+        <h1>คุณอยู่ในเกมแล้ว!</h1>
+        <p class="nickname" id="waiting-nickname">—</p>
+        <p class="muted">ผู้เล่นในห้อง <b id="waiting-count">1</b> คน</p>
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="muted small">รอผู้จัดงานกด “เริ่มเกม” บนจอใหญ่…</p>
+      </div>
+    </section>
+
+    <!-- ============================= ANSWER PAD =========================== -->
+    <section class="screen" id="screen-question" hidden>
+      <div class="pad-head">
+        <span class="q-chip" id="pad-counter">ข้อ 1/1</span>
+        <span class="muted small">ดูโจทย์จากจอใหญ่ แล้วกดตอบด้านล่าง</span>
+      </div>
+
+      <div class="pad" id="pad">
+        <button class="pad-btn pad-btn--0" data-option="0">
+          <span class="shape shape-triangle"></span><span class="letter">A</span>
+        </button>
+        <button class="pad-btn pad-btn--1" data-option="1">
+          <span class="shape shape-diamond"></span><span class="letter">B</span>
+        </button>
+        <button class="pad-btn pad-btn--2" data-option="2">
+          <span class="shape shape-circle"></span><span class="letter">C</span>
+        </button>
+        <button class="pad-btn pad-btn--3" data-option="3">
+          <span class="shape shape-square"></span><span class="letter">D</span>
+        </button>
+      </div>
+
+      <div class="sent-state" id="sent-state" hidden>
+        <div class="sent-icon">✔</div>
+        <div>ส่งคำตอบแล้ว</div>
+        <div class="muted small" id="sent-option"></div>
+      </div>
+    </section>
+
+    <!-- =============================== RESULT ============================= -->
+    <section class="screen center" id="screen-result" hidden>
+      <div class="result-card" id="result-card">
+        <div class="result-icon" id="result-icon">✔</div>
+        <h1 id="result-title">ถูกต้อง!</h1>
+        <div class="result-gain" id="result-gain">+0</div>
+        <p class="muted" id="result-detail"></p>
+        <div class="result-total">
+          <div><span class="muted small">คะแนนรวม</span><br><b id="result-total">0</b></div>
+          <div><span class="muted small">อันดับ</span><br><b id="result-rank">#1</b></div>
+        </div>
+        <p class="muted small">รอผู้จัดงานไปข้อถัดไป…</p>
+      </div>
+    </section>
+
+    <!-- =============================== ENDED ============================== -->
+    <section class="screen center" id="screen-ended" hidden>
+      <div class="result-card">
+        <div class="result-icon">🏁</div>
+        <h1>จบเกม!</h1>
+        <p class="muted" id="ended-nickname">—</p>
+        <div class="result-gain" id="ended-score">0</div>
+        <p class="muted">คะแนนสะสมของคุณ</p>
+        <div id="ended-top3"></div>
+        <a class="btn btn-primary btn-lg" href="index.html">กลับหน้าแรก</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/athena.js"></script>
+  <script src="js/player.js"></script>
+</body>
+</html>
