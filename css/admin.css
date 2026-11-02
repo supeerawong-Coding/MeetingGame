@@ -81,15 +81,21 @@
 .item {
   background: rgba(255, 255, 255, .06);
   border: 1px solid var(--line);
+  border-left: 4px solid transparent;
   border-radius: 14px;
   padding: 13px 15px;
   display: flex;
   gap: 12px;
   align-items: center;
-  transition: border-color .15s ease, background .15s ease, transform .15s ease;
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
 }
 
-.item:hover { background: rgba(255, 255, 255, .09); transform: translateX(3px); }
+/* feedback ด้วยสี/แสง ไม่เลื่อนตำแหน่ง — กันแถบเลื่อนแนวนอนในลิสต์ */
+.item:hover {
+  background: rgba(255, 255, 255, .1);
+  border-left-color: var(--primary-2);
+  box-shadow: 0 8px 22px rgba(124, 92, 255, .25);
+}
 
 .item.is-selected {
   border-color: transparent;

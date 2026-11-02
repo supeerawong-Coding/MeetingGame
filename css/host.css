@@ -102,6 +102,7 @@
   text-align: left;
   background: rgba(255, 255, 255, .07);
   border: 1px solid var(--line);
+  border-left: 4px solid transparent;
   color: var(--text);
   border-radius: 14px;
   padding: 15px 17px;
@@ -109,13 +110,16 @@
   font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: border-color .12s ease, transform .12s ease, background .12s ease;
+  transition: border-color .12s ease, background .12s ease, box-shadow .12s ease;
 }
 
+/* ให้ feedback ด้วยสี/แสงภายใน แทนการเลื่อนตำแหน่ง
+   เพื่อไม่ให้ปุ่มล้นขอบลิสต์จนเกิดแถบเลื่อนแนวนอน */
 .quiz-picker button:hover {
   border-color: var(--primary-2);
+  border-left-color: var(--pink);
   background: rgba(124, 92, 255, .18);
-  transform: translateX(4px);
+  box-shadow: 0 8px 24px rgba(124, 92, 255, .3);
 }
 
 .picked-quiz {
