@@ -161,11 +161,12 @@ security definer
 set search_path = public
 as $$
 declare
-  v_room      public.rooms%rowtype;
-  v_question  public.questions%rowtype;
-  v_elapsed   int4;
-  v_correct   boolean := false;
-  v_score     int4 := 0;
+  v_room        public.rooms%rowtype;
+  v_question    public.questions%rowtype;
+  v_expected_id uuid;
+  v_elapsed     int4;
+  v_correct     boolean := false;
+  v_score       int4 := 0;
 begin
   select * into v_room from public.rooms where id = p_room_id for update;
   if v_room is null then
@@ -181,7 +182,19 @@ begin
   if v_question is null then
     return jsonb_build_object('ok', false, 'error', 'question_not_found');
   end if;
-  if v_question.order_index is distinct from v_room.current_question_index then
+
+  -- ตรวจลำดับข้อตาม "ตำแหน่งที่ Host/Player แสดงจริง" (เรียง order_index, created_at)
+  -- ไม่เทียบกับค่า order_index ตรง ๆ เพราะค่านั้นอาจไม่ต่อเนื่อง/เริ่มจาก 0
+  -- (เช่น ลบคำถามข้อแรกออกไป แล้วเพิ่มคำถามใหม่) ซึ่งจะทำให้คำตอบถูกปฏิเสธทั้งข้อ
+  select t.id into v_expected_id
+    from (
+      select id, row_number() over (order by order_index, created_at) as rn
+        from public.questions
+       where quiz_id = v_room.quiz_id
+    ) t
+   where t.rn = v_room.current_question_index + 1;
+
+  if v_expected_id is distinct from p_question_id then
     return jsonb_build_object('ok', false, 'error', 'wrong_question');
   end if;
 
@@ -196,13 +209,15 @@ begin
     return jsonb_build_object('ok', false, 'error', 'already_answered');
   end if;
 
-  -- จำกัดเวลาให้อยู่ในช่วง [0, time_limit * 1000]
-  v_elapsed := least(greatest(coalesce(p_response_time_ms, 0), 0), v_question.time_limit * 1000);
+  -- จำกัดเวลาให้อยู่ในช่วง [0, time_limit * 2000 ms]  (จุดที่คะแนนเป็น 0 ตามสูตร)
+  -- หมายเหตุ: ทุกค่าต้องเป็นหน่วย "มิลลิวินาที" เท่านั้น มิฉะนั้นคะแนนจะติดลบเสมอ
+  v_elapsed := least(greatest(coalesce(p_response_time_ms, 0), 0), v_question.time_limit * 2000);
 
   v_correct := (p_selected_option = v_question.correct_option);
   if v_correct then
+    -- Score = BasePoints * (1 - ResponseTime(ms) / (TimeLimit(s) * 2000))
     v_score := round(
-      v_question.points * (1 - v_elapsed::numeric / (v_question.time_limit * 2.0))
+      v_question.points * (1 - v_elapsed::numeric / (v_question.time_limit * 2000.0))
     )::int4;
     v_score := greatest(v_score, 0);
   end if;
