@@ -67,7 +67,7 @@ $$;
 -- --------------------------------------------------------- Login / Logout --
 drop function if exists public.admin_login (text, text);
 create function public.admin_login (p_username text, p_password text) returns jsonb
-language plpgsql security definer set search_path = public
+language plpgsql security definer set search_path = public, extensions
 as $$
 declare
   v_hash    text;
@@ -302,6 +302,8 @@ declare
   v_username text := 'admin';
   v_password text := 'เปลี่ยนรหัสผ่านตรงนี้';
 begin
+  perform set_config('search_path', 'public, extensions', true);
+
   if v_password = 'เปลี่ยนรหัสผ่านตรงนี้'
      and not exists (select 1 from public.admin_auth) then
     raise exception 'ยังไม่ได้ตั้งรหัสผ่านแอดมิน — แก้ค่า v_password ในไฟล์นี้ก่อนรัน';
