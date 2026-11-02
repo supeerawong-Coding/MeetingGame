@@ -24,10 +24,5 @@ window.ATHENA_CONFIG = {
   DEFAULT_TIME_LIMIT: 20,
 
   // ค่าเริ่มต้นคะแนนต่อข้อ
-  DEFAULT_POINTS: 1000,
-
-  // ข้อมูลเข้าสู่ระบบหน้า Admin — เปลี่ยนค่าเหล่านี้ก่อนใช้งานจริง
-  // (หมายเหตุ: เป็นการป้องกันระดับหน้าจอเท่านั้น เพราะโค้ดฝั่ง client เปิดอ่านได้)
-  ADMIN_USERNAME: 'admin',
-  ADMIN_PASSWORD: 'athena123'
+  DEFAULT_POINTS: 1000
 };

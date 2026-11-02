@@ -1,6 +1,7 @@
 /**
  * ATHENA — หน้า Admin (admin.html)
- * เข้าสู่ระบบด้วย Username/Password -> จัดการชุดข้อสอบและโจทย์คำถาม
+ * เข้าสู่ระบบด้วย Username/Password ที่ "ตรวจในฐานข้อมูล" (bcrypt ผ่าน RPC `admin_login`)
+ * การแก้ไข/ลบ ข้อมูลทุกครั้งแนบ token ชั่วคราว และ database เป็นผู้ตรวจซ้ำอีกชั้น
  */
 (function () {
   'use strict';
@@ -8,7 +9,7 @@
   var A = window.Athena;
   var $ = A.$;
   var esc = A.esc;
-  var AUTH_KEY = 'athena_admin_auth';
+  var TOKEN_KEY = 'athena_admin_token';
 
   if (!A.guard()) return;
 
@@ -19,15 +20,59 @@
   var questions = [];
   var selectedQuizId = null;
 
-  /* ======================================================== Auth ========= */
-  function isAuthed() {
+  /* ---------------------------------------------------------- Session ---- */
+  function getToken() {
     try {
-      return sessionStorage.getItem(AUTH_KEY) === '1';
+      return sessionStorage.getItem(TOKEN_KEY);
     } catch (e) {
-      return false;
+      return null;
     }
   }
 
+  function setToken(token) {
+    try {
+      if (token) sessionStorage.setItem(TOKEN_KEY, token);
+      else sessionStorage.removeItem(TOKEN_KEY);
+    } catch (e) {}
+  }
+
+  /** เรียก RPC ที่ต้องใช้ token (ทุกการเขียนข้อมูล) */
+  function adminCall(name, args) {
+    var payload = args || {};
+    payload.p_token = getToken();
+    return client.rpc(name, payload);
+  }
+
+  /** ตรวจผลการเขียนข้อมูล — คืน true ถ้ามีข้อผิดพลาด (จัดการแจ้งเตือนแล้ว) */
+  function writeError(res, fallback) {
+    if (res.error) {
+      if (/admin_/.test(res.error.message || '')) {
+        forceLogout('รันไฟล์ sql/migrations/2026-11-02_admin_auth_database.sql ก่อน');
+      } else {
+        A.toast(A.errorMessage(res.error, fallback), 'error');
+      }
+      return true;
+    }
+    if (res.data && res.data.ok === false) {
+      if (res.data.error === 'invalid_session') {
+        forceLogout('เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่');
+        return true;
+      }
+      var messages = {
+        title_required: 'กรุณาใส่ชื่อชุดข้อสอบ',
+        text_required: 'กรุณาใส่คำถาม',
+        options_required: 'กรอกตัวเลือกให้ครบทั้ง 4 ข้อ',
+        correct_required: 'เลือกข้อที่ถูกต้อง',
+        not_found: 'ไม่พบข้อมูล',
+        quiz_not_found: 'ไม่พบชุดข้อสอบ'
+      };
+      A.toast(messages[res.data.error] || fallback, 'error');
+      return true;
+    }
+    return false;
+  }
+
+  /* ------------------------------------------------------------- Auth ---- */
   function showLogin() {
     $('#screen-login').hidden = false;
     $('#admin-app').hidden = true;
@@ -41,48 +86,82 @@
     $('#btn-logout').hidden = false;
   }
 
-  function handleLogin(event) {
+  async function handleLogin(event) {
     event.preventDefault();
+
     var username = $('#login-username').value.trim();
     var password = $('#login-password').value;
-    var cfg = A.CFG;
+    var button = $('#login-form').querySelector('button[type="submit"]');
 
-    if (username === cfg.ADMIN_USERNAME && password === cfg.ADMIN_PASSWORD) {
-      try {
-        sessionStorage.setItem(AUTH_KEY, '1');
-      } catch (e) {}
+    button.disabled = true;
+    try {
+      var res = await client.rpc('admin_login', {
+        p_username: username,
+        p_password: password
+      });
+
+      if (res.error) {
+        $('#login-error').hidden = false;
+        $('#login-error').textContent =
+          /admin_login/.test(res.error.message || '')
+            ? 'ยังไม่ได้รันไฟล์ sql/migrations/2026-11-02_admin_auth_database.sql'
+            : 'เข้าสู่ระบบไม่สำเร็จ';
+        return;
+      }
+
+      if (!res.data || res.data.ok !== true) {
+        $('#login-error').hidden = false;
+        $('#login-error').textContent = 'Username หรือ Password ไม่ถูกต้อง';
+        $('#login-password').value = '';
+        $('#login-password').focus();
+        A.buzz([60, 60, 60]);
+        return;
+      }
+
+      setToken(res.data.token);
       $('#login-error').hidden = true;
       $('#login-form').reset();
-      startApp();
       A.buzz(40);
-    } else {
+      startApp();
+    } catch (e) {
       $('#login-error').hidden = false;
-      $('#login-password').value = '';
-      $('#login-password').focus();
-      A.buzz([60, 60, 60]);
+      $('#login-error').textContent = 'เชื่อมต่อฐานข้อมูลไม่สำเร็จ';
+    } finally {
+      button.disabled = false;
     }
   }
 
-  function logout() {
+  function forceLogout(message) {
+    var token = getToken();
+    if (token && client) client.rpc('admin_logout', { p_token: token });
+    setToken(null);
+    showLogin();
+    if (message) A.toast(message, 'error');
+  }
+
+  async function restoreSession() {
+    var token = getToken();
+    if (!token) {
+      showLogin();
+      return;
+    }
     try {
-      sessionStorage.removeItem(AUTH_KEY);
+      var res = await client.rpc('admin_session_valid', { p_token: token });
+      if (res.data === true) {
+        startApp();
+        return;
+      }
     } catch (e) {}
-    location.reload();
+    setToken(null);
+    showLogin();
   }
 
   function startApp() {
     showApp();
-    if (started) return;
-
-    try {
-      client = A.createClient();
-    } catch (e) {
-      A.toast(e.message, 'error');
-      return;
+    if (!started) {
+      started = true;
+      bindAppEvents();
     }
-
-    started = true;
-    bindAppEvents();
     loadQuizzes();
   }
 
@@ -156,26 +235,15 @@
   async function saveQuiz(event) {
     event.preventDefault();
     var id = $('#quiz-id').value;
-    var payload = {
-      title: $('#quiz-title').value.trim(),
-      description: $('#quiz-description').value.trim() || null
-    };
 
-    if (!payload.title) return;
+    var res = await adminCall('admin_save_quiz', {
+      p_id: id || null,
+      p_title: $('#quiz-title').value,
+      p_description: $('#quiz-description').value
+    });
+    if (writeError(res, 'บันทึกไม่สำเร็จ')) return;
 
-    var res;
-    if (id) {
-      res = await client.from('quizzes').update(payload).eq('id', id).select();
-    } else {
-      res = await client.from('quizzes').insert(payload).select();
-    }
-
-    if (res.error) {
-      A.toast(A.errorMessage(res.error, 'บันทึกไม่สำเร็จ'), 'error');
-      return;
-    }
-
-    var savedId = res.data[0].id;
+    var savedId = res.data.id;
     saveDefaultSettings(savedId, $('#quiz-time-limit').value, $('#quiz-points').value);
 
     $('#quiz-dialog').close();
@@ -188,11 +256,8 @@
     var quiz = quizzes.find(function (q) { return q.id === id; });
     if (!confirm('ลบ "' + (quiz ? quiz.title : '') + '" ?')) return;
 
-    var res = await client.from('quizzes').delete().eq('id', id);
-    if (res.error) {
-      A.toast(A.errorMessage(res.error, 'ลบไม่สำเร็จ'), 'error');
-      return;
-    }
+    var res = await adminCall('admin_delete_quiz', { p_id: id });
+    if (writeError(res, 'ลบไม่สำเร็จ')) return;
 
     A.toast('ลบแล้ว', 'ok');
     if (selectedQuizId === id) {
@@ -287,36 +352,19 @@
     if (!selectedQuizId) return;
 
     var id = $('#question-id').value;
-    var options = [0, 1, 2, 3].map(function (i) { return $('#option-' + i).value.trim(); });
+    var options = [0, 1, 2, 3].map(function (i) { return $('#option-' + i).value; });
 
-    if (options.some(function (o) { return !o; })) {
-      A.toast('กรอกตัวเลือกให้ครบ 4 ข้อ', 'error');
-      return;
-    }
-
-    var payload = {
-      quiz_id: selectedQuizId,
-      question_text: $('#question-text').value.trim(),
-      options: options,
-      correct_option: parseInt($('input[name="correct"]:checked').value, 10),
-      points: parseInt($('#question-points').value, 10) || 1000,
-      time_limit: parseInt($('#question-time-limit').value, 10) || 20,
-      order_index: parseInt($('#question-order').value, 10) || 0
-    };
-
-    if (!payload.question_text) return;
-
-    var res;
-    if (id) {
-      res = await client.from('questions').update(payload).eq('id', id).select();
-    } else {
-      res = await client.from('questions').insert(payload).select();
-    }
-
-    if (res.error) {
-      A.toast(A.errorMessage(res.error, 'บันทึกไม่สำเร็จ'), 'error');
-      return;
-    }
+    var res = await adminCall('admin_save_question', {
+      p_id: id || null,
+      p_quiz_id: selectedQuizId,
+      p_question_text: $('#question-text').value,
+      p_options: options,
+      p_correct_option: parseInt($('input[name="correct"]:checked').value, 10),
+      p_time_limit: parseInt($('#question-time-limit').value, 10),
+      p_points: parseInt($('#question-points').value, 10),
+      p_order_index: parseInt($('#question-order').value, 10)
+    });
+    if (writeError(res, 'บันทึกไม่สำเร็จ')) return;
 
     $('#question-dialog').close();
     A.toast('บันทึกแล้ว', 'ok');
@@ -326,11 +374,10 @@
 
   async function deleteQuestion(id) {
     if (!confirm('ลบคำถามข้อนี้?')) return;
-    var res = await client.from('questions').delete().eq('id', id);
-    if (res.error) {
-      A.toast(A.errorMessage(res.error, 'ลบไม่สำเร็จ'), 'error');
-      return;
-    }
+
+    var res = await adminCall('admin_delete_question', { p_id: id });
+    if (writeError(res, 'ลบไม่สำเร็จ')) return;
+
     A.toast('ลบแล้ว', 'ok');
     await loadQuestions();
     loadQuestionCounts();
@@ -357,7 +404,7 @@
   /* ---------------------------------------------------------- Bindings --- */
   function bindAuthEvents() {
     $('#login-form').addEventListener('submit', handleLogin);
-    $('#btn-logout').addEventListener('click', logout);
+    $('#btn-logout').addEventListener('click', function () { forceLogout(null); });
   }
 
   function bindAppEvents() {
@@ -404,6 +451,13 @@
 
   /* ------------------------------------------------------------- Init ---- */
   bindAuthEvents();
-  if (isAuthed()) startApp();
-  else showLogin();
+
+  try {
+    client = A.createClient();
+  } catch (e) {
+    A.toast(e.message, 'error');
+    return;
+  }
+
+  restoreSession();
 })();

@@ -61,15 +61,17 @@ window.ATHENA_CONFIG = {
   SUPABASE_ANON_KEY: 'eyJhbGciOi...',
   APP_BASE_URL: '',              // เช่น https://your-name.github.io/meeting_game
   DEFAULT_TIME_LIMIT: 20,
-  DEFAULT_POINTS: 1000,
-  ADMIN_USERNAME: 'admin',       // ★ เปลี่ยนก่อนใช้งานจริง
-  ADMIN_PASSWORD: 'athena123'    // ★ เปลี่ยนก่อนใช้งานจริง
+  DEFAULT_POINTS: 1000
 };
 ```
 
-> 🔐 **หน้า Admin ต้อง Login ก่อนจัดการข้อสอบ** — ใส่ Username/Password ตามค่าใน `config.js`
-> เป็นการป้องกันระดับหน้าจอเท่านั้น (โค้ดฝั่ง client เปิดอ่านได้) ถ้าต้องการความปลอดภัยจริงจัง
-> ให้เพิ่ม Supabase Auth + จำกัดสิทธิ์ RLS
+> 🔐 **หน้า Admin ต้อง Login ก่อนจัดการข้อสอบ** — รหัสผ่านไม่ได้อยู่ในโค้ด
+> แต่อยู่ในฐานข้อมูลเป็น **bcrypt hash** (ตาราง `admin_auth`) และตรวจผ่าน RPC `admin_login`
+> * **ไม่มีรหัสผ่านเริ่มต้นในโค้ด** — ต้องตั้งเองโดยแก้ `v_password` ในไฟล์ SQL แล้วรัน
+>   (`sql/migrations/2026-11-02_admin_auth_database.sql`) ถ้าไม่แก้ คำสั่งจะขึ้นข้อผิดพลาดเพื่อกันลืม
+> * ทุกการแก้ไข/ลบ ต้องส่ง token ชั่วคราว (อายุ 12 ชม.) และ database เป็นผู้ตรวจซ้ำ
+> * สิทธิ์ INSERT/UPDATE/DELETE บน `quizzes`/`questions` ถูกเพิกถอนจาก `anon` แล้ว
+>   จึงเรียก REST API ตรง ๆ เพื่อแก้ข้อมูลไม่ได้ แม้รู้ anon key
 
 > ⚠️ ใช้ได้เฉพาะ **anon key** เท่านั้น — **ห้าม**วาง Service Role Key ลงในโค้ดฝั่ง Front-end เด็ดขาด
 > (GitHub Pages เปิดให้ทุกคนอ่านซอร์สโค้ดได้)
