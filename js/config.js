@@ -10,15 +10,15 @@
  */
 window.ATHENA_CONFIG = {
   // รูปแบบ: https://xxxxxxxxxxxx.supabase.co
-  SUPABASE_URL: 'https://YOUR_PROJECT.supabase.co',
+  SUPABASE_URL: 'https://mkefdosrowxvzppfrixz.supabase.co',
 
   // ค่า anon public key จาก Supabase -> Project Settings -> API
-  SUPABASE_ANON_KEY: 'YOUR_ANON_KEY',
+  SUPABASE_ANON_KEY: 'sb_publishable_s5jwFVaYNgREBuUJf_AnDQ_W7VzOrke',
 
   // (ทางเลือก) ใช้เมื่อต้องการระบุ URL ของเว็บแบบตายตัว เช่นตอนสร้าง QR Code
   // ปล่อยว่างไว้ ระบบจะใช้ path ของหน้า host.html ปัจจุบันโดยอัตโนมัติ
   // ตัวอย่าง: 'https://your-name.github.io/meeting_game'
-  APP_BASE_URL: '',
+  APP_BASE_URL: 'https://supeerawong-coding.github.io/MeetingGame/',
 
   // ค่าเริ่มต้นเวลาตอบ (วินาที) ที่ใช้ตอนสร้างคำถามใหม่
   DEFAULT_TIME_LIMIT: 20,
