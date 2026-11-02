@@ -391,6 +391,13 @@
     showScreen('result');
     $('#player-rank').hidden = false;
 
+    // ล้างค่าของข้อที่แล้วออกก่อนดึงข้อมูลใหม่
+    // กันไม่ให้เห็น "คะแนนของข้อที่แล้ว" ปรากฏค้างบนหน้าผลของข้อนี้
+    $('#result-icon').textContent = '⏳';
+    $('#result-title').textContent = 'กำลังสรุปผล…';
+    $('#result-gain').textContent = '';
+    $('#result-detail').textContent = '';
+
     var q = state.questions[state.qIndex];
     var card = $('#result-card');
     card.classList.remove('is-correct', 'is-wrong');
